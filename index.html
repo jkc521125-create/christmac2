@@ -551,25 +551,35 @@ function updateSnow(dt) {
         }
 
         function addPhotoToScene(texture) {
-            const frameGeo = new THREE.BoxGeometry(1.4, 1.4, 0.05);
-            const frameMat = new THREE.MeshStandardMaterial({ color: CONFIG.colors.champagneGold, metalness: 1.0, roughness: 0.1 });
-            const frame = new THREE.Mesh(frameGeo, frameMat);
+    // 获取图片宽高比例
+    const imgWidth = texture.image.width;
+    const imgHeight = texture.image.height;
+    const aspect = imgWidth / imgHeight;
 
-            const photoGeo = new THREE.PlaneGeometry(1.2, 1.2);
-            const photoMat = new THREE.MeshBasicMaterial({ map: texture });
-            const photo = new THREE.Mesh(photoGeo, photoMat);
-            photo.position.z = 0.04;
+    // 按比例创建 Plane
+    const planeHeight = 1.2;
+    const planeWidth = planeHeight * aspect;
 
-            const group = new THREE.Group();
-            group.add(frame);
-            group.add(photo);
-            
-            const s = 0.8;
-            group.scale.set(s,s,s);
-            
-            photoMeshGroup.add(group);
-            particleSystem.push(new Particle(group, 'PHOTO', false));
-        }
+    const photoGeo = new THREE.PlaneGeometry(planeWidth, planeHeight);
+    const photoMat = new THREE.MeshBasicMaterial({ map: texture });
+    const photo = new THREE.Mesh(photoGeo, photoMat);
+    photo.position.z = 0.04;
+
+    const frameGeo = new THREE.BoxGeometry(planeWidth + 0.2, planeHeight + 0.2, 0.05);
+    const frameMat = new THREE.MeshStandardMaterial({ color: CONFIG.colors.champagneGold, metalness: 1.0, roughness: 0.1 });
+    const frame = new THREE.Mesh(frameGeo, frameMat);
+
+    const group = new THREE.Group();
+    group.add(frame);
+    group.add(photo);
+
+    const s = 0.8; 
+    group.scale.set(s, s, s);
+
+    photoMeshGroup.add(group);
+    particleSystem.push(new Particle(group, 'PHOTO', false));
+}
+
         
         function handleImageUpload(e) {
             const files = e.target.files;
@@ -846,6 +856,7 @@ function setupEvents() {
 </body>
 
 </html>
+
 
 
 
